@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://kit.fontawesome.com/6d1bfc0c72.js" crossorigin="anonymous"></script>
+<style type="text/css">
+*{
+color:#CFD1D3;
+background:#15202B;
+}
+
+td,th,table{
+text-align:center;
+border:1px solid grey;
+border-collapse: collapse;
+padding:10px;
+
+}
+th{
+font-size:23px;
+}
+td{
+font-size:19px;
+}
+
+span{
+font-size:40px;
+
+}
+
+
+a{
+margin-right:20px;
+text-decoration:none;
+font-size:20px;
+color:#4DA1FF;
+}
+i{
+font-size:29px;
+color:#4DA1FF;
+}
+#images{
+display:flex;
+flex-direction:column;
+align-items:center;
+
+
+}
+#images img{
+margin-top:40px;
+width:400px
+
+}
+
+#images h3,p{
+text-align:left;
+margin:0;
+padding:0;
+width:400px;
+}
+
+
+
+
+
+
+</style>
+</head>
+<body id="body">
+
+
+<h1 id="id"></h1>
+
+<div align="right">
+<a href="add.html" >  Add</a>
+<a href="Delete">Delete</a>
+
+<a href="Logout" > Logout</a>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div align="center" >
+<!--<h1>Photos Show</h1>  <i class="fas fa-plus"></i>
+  --><span style="color:#FF0000">P</span>
+    <span style="color:#66CC66">h</span>
+    <span style="color:#FF9966">o</span>
+    <span style="color:#FFCCCC">t</span>
+    <span style="color:#FF0066">o</span>
+     <span style="color:#66CC66">S</span>
+    <span style="color:#FF9966">h</span>
+    <span style="color:#FFCCCC">o</span>
+    <span style="color:#FF0066">w</span><br><br>
+
+
+
+<div  id="images" style="width:400px;margin-top:100px;">
+
+
+
+</div>
+
+</div>
+
+
+
+
+
+
+<script type="text/javascript">
+var ans;
+
+window.addEventListener('DOMContentLoaded',async()=>{
+	
+	
+	var chk = (document.cookie.split(";").length)
+	
+	if(chk==1 || chk ==0){
+		 window.location.replace("http://localhost:8081/PhotosShow/login.html");
+
+	}
+	
+	
+	
+	 var status = document.cookie.split(";")[0].split("=")[1]
+	 
+	 var id = document.cookie.split(";")[1].split("=")[1]
+	 id= (id-12345)/12345;
+	 document.getElementById("id").innerText="User Id :"+id;
+	 if(status!="true" || (id<10000 || id>11000)  ){
+		 window.location.replace("http://localhost:8081/PhotosShow/login.html");
+	 }else{
+	 
+	
+	 
+	 
+	 var datas= await fetch("http://localhost:8081/PhotosShow/Fetch",{method:"POST"});
+	 result=await datas.json();
+	 ans=result;
+	    console.log(result)
+	    
+	    creater(result);
+	    
+	 }
+})
+
+async function fut(gid,i){
+	
+	var s =   await fetch("http://localhost:8081/PhotosShow/Ddelete?gid="+gid,{method:"GET"});
+	var ss = await s.json();
+	console.log("s vale : "+ss["result"])
+	if(ss["result"]=="0"){
+		alert("'WARNING!, Dont try to delete others posts...'");
+	}
+	
+	ans =  ans.splice(i,1);
+	
+	const element = document.getElementById("images");
+	element.innerHTML="";
+	
+	
+	 creater(ans);
+	 console.log(ans);
+	console.log(gid,i);
+	
+}
+
+
+function creater(result){
+	
+	
+	
+	
+	for(var i=0;i<result.length;i++){
+    	
+		
+   	 var img = document.createElement("img");
+   	 img.src=result[i].path;
+   	 document.getElementById("images").append(img);
+   	 
+   	 
+   	 
+   	 var content = document.createElement("h3");
+   	 content.innerText = result[i].generatedid+" - "+result[i].content;
+   	 document.getElementById("images").append(content);
+   	 
+   	 
+   	 var name = document.createElement("p");
+   	 name.innerText="#"+result[i].name+" #"+result[i].date;
+   	 document.getElementById("images").append(name);
+   	
+var btn = document.createElement("a");
+   	 
+   	 btn.setAttribute("href",result[i].path);
+   	
+   	 btn.innerText=("View");
+   	 document.getElementById("images").append(btn);
+   	 
+   	 var btn = document.createElement("a");
+   	 
+   	 btn.setAttribute("href",result[i].path);
+   	 btn.setAttribute("download",result[i].path);
+   	 btn.innerText=("Download");
+   	 document.getElementById("images").append(btn);
+   	 
+   	 
+var index = 0;   	 
+var btn = document.createElement("button");
+btn.setAttribute("value",result[i].generatedid);
+btn.setAttribute("id",result[i].generatedid);
+var g = result[i].generatedid;
+btn.setAttribute("onclick","fut("+g+","+index+")");
+btn.innerText=("delete");
+index++;
+document.getElementById("images").append(btn);
+   } 
+	
+	
+}
+
+
+
+
+</script>
+
+</body>
+
+
+
+</html>
